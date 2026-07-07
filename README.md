@@ -45,3 +45,7 @@ npm run publish   # Build + upload to GitHub / بناء ورفع
 - **Web Audio API** — Dual playback contexts
 - **electron-updater** — Auto updates
 - **electron-builder** — Packaging & distribution
+
+---
+
+Made with ❤️ by **Srp0**
