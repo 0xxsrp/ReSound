@@ -33,7 +33,7 @@
     "publish": {
       "provider": "github",
       "owner": "0xxsrp",
-      "repo": "soundboard-desktop"
+      "repo": "ReSound"
     }
   },
   "dependencies": {
