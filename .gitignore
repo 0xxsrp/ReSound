@@ -1,0 +1,13 @@
+node_modules/
+dist/
+win-unpacked/
+*.exe
+*.json
+!package.json
+!package-lock.json
+.env
+volumes.json
+config.json
+hotkeys.json
+playcounts.json
+favorites.json

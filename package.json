@@ -1,0 +1,47 @@
+{
+  "name": "resound",
+  "version": "2.0.0",
+  "description": "ReSound - Soundboard Desktop Application",
+  "author": "0Srp",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder build --win --publish never",
+    "publish": "electron-builder build --win --publish always"
+  },
+  "build": {
+    "appId": "com.soundboard.desktop",
+    "productName": "ReSound",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "icon.png",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "0xxsrp",
+      "repo": "soundboard-desktop"
+    }
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9",
+    "ffmpeg-static": "^5.2.0"
+  },
+  "devDependencies": {
+    "electron": "^33.4.0",
+    "electron-builder": "^25.1.8"
+  }
+}

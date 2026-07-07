@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReSound</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+  <header>
+    <div class="toolbar">
+      <svg class="app-logo" viewBox="0 0 28 28" width="22" height="22">
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#cba6f7"/>
+            <stop offset="100%" stop-color="#b4befe"/>
+          </linearGradient>
+          <filter id="logoGlow"><feGaussianBlur stdDeviation=".8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect x="2" y="2" width="24" height="24" rx="7" fill="url(#logoGrad)" filter="url(#logoGlow)"/>
+        <rect x="8" y="10" width="2.4" height="8" rx="1" fill="#1e1e2e"/>
+        <rect x="12.8" y="7" width="2.4" height="14" rx="1" fill="#1e1e2e"/>
+        <rect x="17.6" y="11" width="2.4" height="6" rx="1" fill="#1e1e2e"/>
+      </svg>
+      <select id="guild-select"></select>
+      <div class="search-group">
+        <input type="text" id="search-input" placeholder="Search name or hk:hotkey...">
+        <button id="clear-search" class="hidden">&times;</button>
+      </div>
+      <select id="sort-select">
+        <option value="name">Name</option>
+        <option value="name_desc">Name &darr;</option>
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+        <option value="hotkey">Hotkey</option>
+      </select>
+      <button id="upload-btn">Upload</button>
+      <div class="vol-group">
+        <label for="volume-slider">&#128266;</label>
+        <input type="range" id="volume-slider" min="0" max="100" value="100">
+        <span id="volume-label">100%</span>
+      </div>
+      <button id="density-btn" title="Grid size">&#9638;</button>
+      <button id="fav-btn" title="Favorites">&#9733;</button>
+      <button id="queue-btn" title="Queue">&#9654;&#65039;</button>
+      <button id="theme-btn" title="Toggle theme">&#9788;</button>
+      <button id="help-btn" title="Keyboard shortcuts">&#10067;</button>
+      <button id="hotkey-list-btn" title="Hotkeys list">&#9000;</button>
+      <button id="settings-btn" title="Settings">&#9881;</button>
+    </div>
+  </header>
+
+  <nav id="cat-bar"></nav>
+
+  <main id="sound-grid" class="drop-zone"></main>
+
+  <div id="multi-bar" class="hidden">
+    <span id="multi-count"></span>
+    <button id="multi-play">Play All</button>
+    <button id="multi-hotkey">Hotkey</button>
+    <button id="multi-delete">Delete</button>
+    <button id="multi-clear-hotkeys">Clear Hotkeys</button>
+    <button id="multi-move">Move to...</button>
+    <button id="multi-clear">Clear</button>
+  </div>
+
+  <div id="now-playing" class="hidden">
+    <svg class="np-icon" viewBox="0 0 12 12" width="12" height="12"><path d="M3 2v8l6-4z" fill="currentColor"/></svg>
+    <span id="now-playing-name"></span>
+    <div class="progress-bar"><div id="progress-fill"></div></div>
+    <button id="stop-btn">Stop</button>
+  </div>
+
+  <div id="vol-indicator" class="vol-indicator hidden"></div>
+  <footer id="status-bar"></footer>
+</div>
+
+<div id="rename-modal" class="modal hidden">
+  <div class="modal-bg"></div>
+  <div class="modal-box">
+    <h3>Rename</h3>
+    <p id="rename-current"></p>
+    <input type="text" id="rename-input" maxlength="80" placeholder="New name">
+    <div class="modal-actions">
+      <button class="btn primary" id="rename-confirm">Rename</button>
+      <button class="btn" id="rename-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="cat-modal" class="modal hidden">
+  <div class="modal-bg"></div>
+  <div class="modal-box">
+    <h3 id="cat-modal-title">New Category</h3>
+    <p id="cat-modal-hint"></p>
+    <input type="text" id="cat-input" maxlength="40" placeholder="Category name">
+    <div class="modal-actions">
+      <button class="btn primary" id="cat-confirm">Create</button>
+      <button class="btn" id="cat-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="settings-modal" class="modal hidden">
+  <div class="modal-bg"></div>
+  <div class="modal-box">
+    <h3>Settings</h3>
+    <div class="settings-group">
+      <label for="output-device">Output 1 (Speakers)</label>
+      <select id="output-device"></select>
+    </div>
+    <div class="settings-group">
+      <label for="output-device2">Output 2 (Virtual Cable)</label>
+      <select id="output-device2"></select>
+      <p class="hint">Select a virtual cable to route sound to your microphone</p>
+    </div>
+    <div class="settings-group">
+      <label><input type="checkbox" id="tray-check"> Minimize to tray instead of closing</label>
+    </div>
+    <div class="settings-group">
+      <label><input type="checkbox" id="start-minimized-check"> Start minimized to tray</label>
+    </div>
+    <div class="settings-group">
+      <label>Hotkeys</label>
+      <div class="settings-actions">
+        <button class="btn" id="export-hotkeys-btn">Export</button>
+        <button class="btn" id="import-hotkeys-btn">Import</button>
+      </div>
+    </div>
+    <div class="settings-group">
+      <label>Updates</label>
+      <div class="settings-actions">
+        <button class="btn" id="check-update-btn">Check for Updates</button>
+        <span id="update-status-text" style="font-size:11px;color:var(--text3);margin-left:6px"></span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="settings-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="hotkey-modal" class="modal hidden">
+  <div class="modal-bg"></div>
+  <div class="modal-box">
+    <h3>Assign Hotkey</h3>
+    <p id="hk-sound-name" class="hk-sound-name"></p>
+    <div class="hk-recorder" id="hk-recorder" tabindex="0">
+      <span id="hk-display" class="hk-placeholder">Press a key combination...</span>
+    </div>
+    <p id="hk-hint" class="hint"></p>
+    <div class="modal-actions">
+      <button class="btn primary" id="hk-save" disabled>Save</button>
+      <button class="btn" id="hk-remove" style="display:none">Remove</button>
+      <button class="btn" id="hk-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="queue-modal" class="modal hidden">
+  <div class="modal-bg"></div>
+  <div class="modal-box queue-box">
+    <h3>Queue</h3>
+    <div id="queue-list"></div>
+    <div class="modal-actions">
+      <button class="btn primary" id="queue-play-all">Play All</button>
+      <button class="btn" id="queue-clear">Clear</button>
+      <button class="btn" id="queue-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirm-modal" class="modal hidden">
+  <div class="modal-bg"></div>
+  <div class="modal-box">
+    <p id="confirm-msg" style="margin:12px 0;font-size:13px;color:var(--text)"></p>
+    <div class="modal-actions">
+      <button class="btn primary" id="confirm-yes">Yes</button>
+      <button class="btn" id="confirm-no">No</button>
+    </div>
+  </div>
+</div>
+
+<div id="hotkey-list-modal" class="modal hidden">
+  <div class="modal-bg"></div>
+  <div class="modal-box">
+    <h3>Hotkeys</h3>
+    <p class="hint">All assigned hotkeys in this server</p>
+    <div id="hk-list-content"></div>
+    <div class="modal-actions">
+      <button class="btn" id="hk-list-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="move-modal" class="modal hidden">
+  <div class="modal-bg"></div>
+  <div class="modal-box">
+    <h3>Move to Category</h3>
+    <p class="hint">Select a category for the selected sounds</p>
+    <div id="move-cat-list"></div>
+    <div class="modal-actions">
+      <button class="btn" id="move-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="help-modal" class="modal hidden">
+  <div class="modal-bg"></div>
+  <div class="modal-box">
+    <h3>Keyboard Shortcuts</h3>
+    <table class="shortcuts-table">
+      <tr><td><kbd>Space</kbd></td><td>Stop current sound</td></tr>
+      <tr><td><kbd>Escape</kbd></td><td>Close modal / Stop sound</td></tr>
+      <tr><td><kbd>Ctrl+F</kbd></td><td>Focus search</td></tr>
+      <tr><td><kbd>Ctrl+U</kbd></td><td>Upload files</td></tr>
+      <tr><td><kbd>Ctrl+D</kbd></td><td>Clear multi-select</td></tr>
+      <tr><td><kbd>Ctrl+Shift+F</kbd></td><td>Toggle favorites filter</td></tr>
+      <tr><td><kbd>Ctrl+Up</kbd></td><td>Increase volume</td></tr>
+      <tr><td><kbd>Ctrl+Down</kbd></td><td>Decrease volume</td></tr>
+      <tr><td><kbd>Arrow keys</kbd></td><td>Navigate grid</td></tr>
+      <tr><td><kbd>Enter</kbd></td><td>Play focused card</td></tr>
+      <tr><td><kbd>Ctrl+Click</kbd></td><td>Toggle multi-select</td></tr>
+      <tr><td><kbd>Shift+Click</kbd></td><td>Range select</td></tr>
+    </table>
+    <div class="modal-actions">
+      <button class="btn" id="help-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-box"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
