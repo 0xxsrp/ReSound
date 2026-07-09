@@ -3,7 +3,21 @@ const path = require('path');
 const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
 
-const SOUNDS_DIR = path.resolve(__dirname, '..', 'soundboard-bot', 'sounds');
+function findSoundsDir() {
+  const candidates = [
+    path.resolve(__dirname, '..', 'soundboard-bot', 'sounds'),
+    path.resolve(process.cwd(), '..', 'soundboard-bot', 'sounds'),
+    path.resolve(path.dirname(app.getPath('exe')), '..', '..', '..', 'soundboard-bot', 'sounds'),
+    path.join(app.getPath('documents'), 'ReSound', 'sounds'),
+  ];
+  for (const d of candidates) {
+    try { if (fs.statSync(d)?.isDirectory()) return d; } catch {}
+  }
+  const dir = candidates[0];
+  try { fs.mkdirSync(dir, { recursive: true }); } catch {}
+  return dir;
+}
+const SOUNDS_DIR = findSoundsDir();
 const VOLUMES_FILE = path.join(__dirname, 'volumes.json');
 const CONFIG_FILE = path.join(__dirname, 'config.json');
 const HOTKEYS_FILE = path.join(__dirname, 'hotkeys.json');
