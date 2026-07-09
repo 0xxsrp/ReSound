@@ -210,7 +210,8 @@ async function init() {
 
   if (guilds.length === 0) {
     guildSelect.innerHTML = '<option>No servers</option>';
-    soundGrid.innerHTML = '<div class="empty">No servers found. Upload sounds via the bot first.</div>';
+    const dir = await window.sb.getSoundsDir();
+    soundGrid.innerHTML = '<div class="empty">No servers found.<br>Looking in: <code style="font-size:10px;color:var(--accent)">' + esc(dir) + '</code><br><br>Upload sounds via the bot, or copy them to that folder.</div>';
     return;
   }
 

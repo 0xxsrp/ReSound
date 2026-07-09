@@ -4,16 +4,25 @@ const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
 
 function findSoundsDir() {
+  const exeDir = path.dirname(app.getPath('exe'));
+  const desktop = app.getPath('desktop');
   const candidates = [
+    // development: __dirname = project root
     path.resolve(__dirname, '..', 'soundboard-bot', 'sounds'),
+    // portable exe: cwd = dist\win-unpacked
     path.resolve(process.cwd(), '..', 'soundboard-bot', 'sounds'),
-    path.resolve(path.dirname(app.getPath('exe')), '..', '..', '..', 'soundboard-bot', 'sounds'),
+    path.resolve(process.cwd(), '..', '..', '..', 'soundboard-bot', 'sounds'),
+    // installed exe: exe in Program Files, sounds on Desktop
+    path.resolve(exeDir, '..', '..', '..', '..', 'soundboard-bot', 'sounds'),
+    path.join(desktop, 'srp0dev', 'newbot', 'soundboard-bot', 'sounds'),
+    // fallback: user documents / appData
     path.join(app.getPath('documents'), 'ReSound', 'sounds'),
+    path.join(app.getPath('userData'), 'sounds'),
   ];
   for (const d of candidates) {
     try { if (fs.statSync(d)?.isDirectory()) return d; } catch {}
   }
-  const dir = candidates[0];
+  const dir = path.join(app.getPath('userData'), 'sounds');
   try { fs.mkdirSync(dir, { recursive: true }); } catch {}
   return dir;
 }
