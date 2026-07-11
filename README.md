@@ -105,6 +105,4 @@ npm run publish    # بناء ورفع لإصدارات GitHub
 
 ---
 
-<p align="center">
-  Made with ❤️ by <strong>Srp0</strong>
-</p>
+<p align="center">Made with ❤️ by <a href="https://github.com/0Srp">Srp0</a></p>
